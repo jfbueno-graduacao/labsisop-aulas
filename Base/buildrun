@@ -1,6 +1,0 @@
-#!/bin/bash
-
-
-gcc $1.c -Wall -o ./bin/$1.out
-
-./bin/$1.out
