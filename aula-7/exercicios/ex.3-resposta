@@ -1,0 +1,5 @@
+O processo não espera mais o sinal para mostrar uma mensagem na tela (comportamento anterior).
+
+Com o novo código, o processo printa a mensagem na tela mesmo sem receber qualquer sinal, 
+fazendo com que apareca repetidas vezes a mensgem com o "contador" no mesmo valor do loop anterior 
+- isso até que o processo receba um sinal e incremente o contador
