@@ -1,0 +1,66 @@
+Crie um programa em shell script denominado sistemaintegrado.sh.
+
+
+1) (1 ponto) Esse programa deve exibir um menu com 4 opções para o usuário escolher,
+digitado pela entrada padrão, conforme o exemplo abaixo:
+****** SISTEMA INTEGRADO ******
+1 - Contabilidade
+2 - Vendas
+3 - Calendário
+4 - Sair
+*******************************
+Este programa deve ficar executando em primeiro plano enquanto a entrada digitada for
+diferente de 4.
+
+-------------
+
+2) (1 ponto) A opção 4 deve encerrar a execução do programa principal (sistemaintegrado.sh),
+com status de terminação de sucesso e mensagem de agradecimento (Ex. "Obrigado por
+utilizar o Sistema Integrado").
+
+-------------
+
+3) (2,5 pontos) Se selecionada a opção 1 deve abrir o programa contabilidade implementado
+em C (contabilidade.c). O programa contabilidade deverá receber como entrada pela entrada
+padrão o salário anual do colaborador.
+- O valor deve estar entre 0 e 100.000. Validar, solicitando a redigitação, se necessário.
+- Se o salário mensal médio for menor que 2.000, deve ser executado como processo filho o
+programa simplificado.c. O programa simplificado.c exibe a mensagem na saída padrão a
+data/hora atual seguido da mensagem "Isento do imposto de renda!".
+- Se o salário mensal médio for maior ou igual a 2.000, deve ser aberto o navegador padrão
+(ex. Firefox) na página da Receita Federal do Brasil (RFB): www.receita.fazenda.gov.br
+
+--------
+
+4) (1 ponto) O programa contabilidade.c deve aguardar a conclusão do processo filho. Exibindo
+o seu PID e de seu pai. Os processos filhos também devem exibir os seus PIDs e de seu pai.
+
+--------
+
+5) (1 ponto) O processo contabilidade deve capturar e tratar sinais.
+- Se for recebido o sinal SIGUSR1, deve ser emitida a mensagem: "Sinal recebido. Aguardar a
+conclusão do processo filho!".
+- Se for recebido o sinal SIGUSR2, deve ser emitida a mensagem: "Sinal recebido. Ainda em
+processamento..."
+
+---
+
+6) (2,5 pontos) Se selecionada a opção 2 no menu do sistemaintegrado deve-se abrir o
+programa vendas implementado em C (vendas.c).
+- O programa vendas deverá ler na entrada padrão: quantidade e preço de custo unitário.
+- Deverá calcular e exibir na saída padrão:
+(A) O valor de custo total do produto é XXXX (custo total do produto = quantidade x preço custo
+unitário) [Exemplo: O valor de custo total do produto é R$ 100,00 (10 x R$ 10,00)]
+(B) O valor de margem de contribuição é YYYY (calcular 50% sobre o valor de custo total)
+[Exemplo: O valor de margem de contribuição é R$ 50,00]
+(C) O valor do ICMS para o produto é ZZZZ (calcular 17% sobre o valor de custo total +
+margem de contribuição) [Exemplo: O valor do ICMS para o produto é: R$ 25,50]
+(D) O valor de venda do produto é WWWW (somatória dos valores A, B e C) [Exemplo: O valor
+de venda do produto é R$ 175,50].
+
+---
+
+7) (1 ponto) Se selecionada a opção 3 no menu do sistemaintegrado deve-se exibir o
+calendário mensal.
+Enviar os arquivos .sh e .c, zipados com o nome do aluno como comentário em todos os
+arquivos fontes.
