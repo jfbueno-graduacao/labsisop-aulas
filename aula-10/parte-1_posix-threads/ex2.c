@@ -20,7 +20,8 @@ void *BusyWork(void *param) {
 	printf("Starting thread #%d\n", wu->id);
 	wu->result = 0.0;
 
-	for (i=0; i<wu->n_runs; i++) wu->result += random();
+	for (i=0; i < wu->n_runs; i++) 
+		wu->result += random();
 
 	pthread_exit((void *) wu);
 }
@@ -36,7 +37,7 @@ int main(int argc, char *argv[]) {
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
 	
-	for(t=0;t<NUM_THREADS;t++) {
+	for(t = 0; t < NUM_THREADS; t++) {
 		w = &wunits[t];
 		w->id = t; 
 		w->n_runs = ROUNDS;
@@ -53,7 +54,7 @@ int main(int argc, char *argv[]) {
 
 	pthread_attr_destroy(&attr);
 	
-	for(t=0;t<NUM_THREADS;t++) {
+	for(t = 0; t < NUM_THREADS; t++) {
 		rc = pthread_join(thread[t], (void *) &status);
 		if (rc) {
 			errno = rc; 
