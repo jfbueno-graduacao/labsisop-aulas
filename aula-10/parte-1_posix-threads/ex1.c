@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 	int te;
 	char* names[NUM_THREADS] = { "moe", "larry", "curly" };
 	for (n=0; n<NUM_THREADS; n++) {
-		te = pthread_create(&tids[n],NULL,&PrintHello,(void *) names[n]);
+		te = pthread_create(&tids[n], NULL, &PrintHello, (void *) names[n]);
 		if (te) {
 			errno = te;
 			perror("Falha na criação da thread");
