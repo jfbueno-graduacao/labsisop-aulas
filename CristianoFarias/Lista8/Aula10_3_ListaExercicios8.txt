@@ -1,0 +1,25 @@
+Lista de exercícios 8
+
+1) Alterar exemplo 1 (Threads-ex1.c) informando o id da thread chamadora (pai) e da thread criada (filha), para cada thread gerada
+
+2) Alterar o exemplo2 (Threads-ex2.c) de modo que o programa receba 2 valores por linha de comando. Executar em 4 threads distintas as operações aritméticas de soma, subtração, divisão e mutiplicação. Implementar o tratamento para exibir o resultado das 4 operações ao final.
+
+3) Implementar um programa que receba pela entrada padrão o nome de um arquivo. Verificar se ele existe, caso afirmativo, exibir seu conteúdo e tamanho. Caso não exista, solicitar um texto adicional a ser digitado e gravado no novo arquivo criado.
+
+4) Desenvolva um programa conta_linhas que reproduz de forma simplificada a funcionalidade do programa wc -l do unix, ou seja um contador de linhas. O programa deve ler de forma eficiente os bytes recebidos na entrada padrão e contar o número de ocorrências do caractere '\n' (terminador de linha). Depois deve exibir na saída padrão uma mensagem informando a quantidade de linhas contabilizada.
+Dica: utilize uma estratégia de bufferização
+Exemplo:
+$ seq 1 100 | ./conta_linhas
+Total de linhas: 100
+
+5) Desenvolva um programa multi_conta_linhas, o qual recebe como parâmetros de linha de comando vários nomes de arquivos. O programa então lê o conteúdo de cada arquivo e exibe para a saída padrão um relatório que a apresenta a quantidade total de linhas em cada arquivo.
+Exemplo:
+$ ./multi_conta_linhas a.txt b.txt c.txt
+Totais de linhas em cada arquivo:
+a.txt: 5
+b.txt: 10
+c.txt: 19
+
+6) Apresente um exemplo de uso do comando od do unix.
+
+7) Apresente um exemplo de uso do comando strace do unix.

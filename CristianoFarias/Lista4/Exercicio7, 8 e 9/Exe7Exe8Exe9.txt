@@ -1,0 +1,71 @@
+//Cristiano Farias - Laboratorio de Sistemas - Lista4
+
+
+7) Estude as diferenças e compare o uso de um String Java e um string C. Apresente 1 exemplo.
+
+Em C as Strings são vetores de char onde o fim da string está demarcada com '\0',
+
+char minhaString[4] = { 'c', 'é', 'u', '\0' }; //Escrevendo a palavra "céu"
+
+já em Java as Strings são tratadas pela classe String, Abstraindo a necessidade do programador de trabalhar diretamente com char.
+
+String minhaString = "céu";
+
+================================================================================================
+
+8) Estude as diferenças e compare uma classe Java e uma struct C. Apresente 1 exemplo.
+
+A struct se assemelha a classe Java porem não possui a mesma funcionalidade, A classe possui a ideia de objeto, atribuindo variaveis, constantes e metodos deste Objeto, já a Struct somente possui atributos e variaveis nas quais pode fazer operações e funções, Uma Struct se assemelha mais a um Método em java do que uma Classe. 
+
+Java:
+public class MyJavaClass {
+       private int x;
+       public int getX() {
+           return x;
+       }
+       public int setX(int value) {
+           x = value;
+       }
+}
+
+
+C: (EM c teriamos que dividir em varias Structs)
+
+
+struct MyJavaClass {
+    int x;
+};
+
+int MyJavaClass_getX(struct MyJavaClass* this) {
+    return this->x;
+}
+void MyJavaClass_setX(struct MyJavaClass* this, int value) {
+    this->x = value;
+}
+
+================================================================================================
+
+9) Estude e compare as diferenças entre arrays em Java e em C. Apresente 1 exemplo.
+
+Tanto em C quanto em JAVA o uso de arrays possui grande semelhanças
+
+EM C:
+int numeros[5] = {10, 20, 30, 40, 50};
+
+EM JAVA:
+int numeros[] = {10, 20, 30, 40, 50};
+
+Note que a diferenca esta em que no Java não podemos especificar o tamanho e inserir o numero de elementos correspondentes ao mesmo tempo, Em C podemos declarar o tamanho e os valores informados completaram as lacunas e caso não preencham todos os campos os demais recebem o valor
+default do tipo de dados:
+
+EX:
+
+EM C:
+int numeros[7] = {10, 20, 30, 40, 50};
+é igual a 
+
+int numeros[7] = {10, 20, 30, 40, 50,0,0};
+
+
+
+

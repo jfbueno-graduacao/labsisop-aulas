@@ -1,0 +1,16 @@
+LISTA DE EXERCÍCIOS 9
+
+1) Incluir prints entre as chamadas do PIPE (entre pai e filho) para os exemplos 1 e 2.
+
+2) Utilizando pipes, capturar a saida de um comando (ex.: date) executado em um processo filho.
+
+3) Desenvolva um programa gzip_cat o qual recebe como parâmetro de linha de comando um nome de arquivo e exibe na saída padrão o conteúdo daquele arquivo, de forma semelhante ao comando cat padrão.
+O gzip_cat entretanto tem um habilidade adicional: caso o arquivo seja um arquivo com 
+extensão .gz, o gzip_cat detecta essa situação e descompacta o conteúdo do arquivo antes de exibí-lo na saída padrão.
+Ou seja, o gzip_cat, quando está processando um arquivo .gz dispara um processo auxiliar com o programa gzip e utiliza esse processo como filtro para descompactar os dados que estão armazenados no arquivo, de forma semelhante ao que aconteceria no trecho de script shell abaixo:
+
+gzip < arquivo.gz | cat
+
+Dica: usar o comando od
+
+

@@ -1,0 +1,3 @@
+Qual o comportamento observado?
+A cada chamado de USR1 esta sendo somado 1 no contador, e o sleep causa uma demora de 1 segundo no laço do while,
+Continuando assim a printar o numero do contador a cada segundo, USR1 não suspende mais o processo devido a linha ter sido comentada. 
