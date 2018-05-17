@@ -1,0 +1,80 @@
+Lista de exercícios 4
+
+1) Crie um programa em C que imprima na tela:
+O string "Olá Mundo" seguindo de uma quebra de linha;
+O número 3.141581 com 3 casas decimais;
+
+Ex1.c no zip
+
+2) Crie um programa em C que imprima, individualmente, cada um dos caracteres, um por linha, de uma string lida da entrada padrão (max 128 caracteres)
+
+Ex2.c no zip
+
+3) Crie uma função imprime_caracteres() que recebe um string C como parâmetro e realize o procedimento da etapa anterior.
+
+Ex3.c no zip
+
+4) Crie uma função imprime_bytes_dec() que imprima o valor numérico (em notação decimal) de cada um dos caracteres de uma string recebida como parâmetro.
+
+Ex4.c no zip
+
+5) Crie uma função imprime_bytes_hex() que imprima o valor numérico, em notação hexadecimal, de cada um dos bytes que formam um inteiro recebido como parâmetro, iniciando pelo byte menos significativo.
+
+Ex5.c no zip
+
+6) Crie uma função imprime_bytes_bin() que imprima o valor numérico, em notação binária, de cada um dos bytes que forma um inteiro longo recebido como parâmetro, iniciando pelo byte menos significativo.
+
+Ex6.c no zip
+
+7) Estude as diferenças e compare o uso de um String Java e um string C. Apresente 1 exemplo.
+
+Em Java existe a classe String que abstrai todos os detalhes do objeto alfanumérico.
+Em C não possui um tipo de dado String, apenas char. Logo um String em C é um array de char, terinado em "\0". A variável possui o ponteiro para a primeira posição do vetor de caracteres.
+
+Exemplo em Java
+String minhaString = "Exemplo de variavel String inicializada em Java";
+
+Exemplo em C
+char *minhaString = "Exemplo de variavel String inicializada em C";
+ou
+char minhaString [50] = "Exemplo de variavel String inicializada em C";
+
+
+8) Estude as diferenças e compare uma classe Java e uma struct C. Apresente 1 exemplo.
+
+Tanto a classe e Java quanto a Strut em C é uma estrutura de dados para armazenamento.
+A classe possui métodos, além dos atributos.
+A strut possui apenas atributos. Não permite herança e outras propriedades das classes em Java.
+
+Exemplo em Java
+class Retangulo{
+	int l1, l2;
+	void calcularArea(){}
+}
+
+
+Exemplo em C
+typedef struct Retangulo {
+  int l1, l2;
+} forma_retangulo;
+
+
+9) Estude e compare as diferenças entre arrays em Java e em C. Apresente 1 exemplo.
+
+Um array é uma região de memória contígua de mesmo tipo, em ambas as linguagens.
+Em C a alocação do endereçamento de memória ocorre na declaração.
+Em Java deve-se na delcaração é nomeada a variavel array, sendo através do new realizada a alocação do espaço. Em java o array é tratado como um objeto com atributos e métodos.
+
+Exemplo em Java
+int [] vet; 
+vet = new int [5];
+vet[0] = 12;
+
+Exemplo em C
+int vet [5];
+vet[0] = 12;
+
+
+10) Implemente um Shell Script que utilize um programa em C, desenvolvido por vocês. O programa em C deve receber um valor por parâmetro, oriundo da entrada parametrizada do script. Se o parâmetro for 1, a saída do programa C deverá informar qual % de memória livre e se o parâmetro for 2, qual % memória usada do computador.
+Ex10.c / Ex10.sh no zip
+
