@@ -25,6 +25,8 @@ void descompactar(char* arquivo) {
 	int fd[2];
 	char buffer[BUFFER_SIZE];
 
+	printf("%s\n", arquivo);
+
 	switch(fork()) 
 	{
 		case -1:
@@ -32,16 +34,23 @@ void descompactar(char* arquivo) {
 			exit(EXIT_FAILURE);
 			break;
 		case 0:
-			close(fd[0]); 
+			close(fd[0]); //Fecha leitura
 
-			execlp("gzip", "gzip", arquivo, "-d -c", NULL);
+			dup2(fd[1], STDIN_FILENO);			
+			close(fd[1]);
+
+			//opcao -c envia o resultado para STDIN
+			execlp("gzip", "gzip", arquivo, "-d", "-c", NULL);
 			perror("erro ao executar gzip");
 			break;
 		default:
-			close(fd[1]);
+			dup2(fd[0], STDOUT_FILENO);
 
-			int n = read(fd[0], buffer, BUFFER_SIZE);
-			write(STDOUT_FILENO, buffer, n);
+			printf("%s\n", "Processo pai. Lendo arquivo:");
+
+			execlp("cat", "cat", NULL);
+			perror("erro ao executar cat");
 			break;
 	}
 }
+
