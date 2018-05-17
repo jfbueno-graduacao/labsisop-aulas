@@ -3,6 +3,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #define BUFFER_SIZE 4096
 
 void descompactar(char* arquivo);
@@ -25,8 +28,6 @@ void descompactar(char* arquivo) {
 	int fd[2];
 	char buffer[BUFFER_SIZE];
 
-	printf("%s\n", arquivo);
-
 	switch(fork()) 
 	{
 		case -1:
@@ -34,22 +35,28 @@ void descompactar(char* arquivo) {
 			exit(EXIT_FAILURE);
 			break;
 		case 0:
-			close(fd[0]); //Fecha leitura
+			close(fd[0]); 
 
-			dup2(fd[1], STDIN_FILENO);			
+			dup2(fd[1], STDOUT_FILENO);			
 			close(fd[1]);
 
-			//opcao -c envia o resultado para STDIN
+			printf("%s\n", "Processo auxiliar. Descompactando o arquivo" );
+
+			//opcao -c envia o resultado para STDOUT
 			execlp("gzip", "gzip", arquivo, "-d", "-c", NULL);
 			perror("erro ao executar gzip");
 			break;
 		default:
-			dup2(fd[0], STDOUT_FILENO);
+			close(fd[1]);
 
-			printf("%s\n", "Processo pai. Lendo arquivo:");
+			dup2(fd[0], STDIN_FILENO); // Aponta f[0] para e entrada padrão 
+			close(fd[0]); // fecha fd[0]
 
-			execlp("cat", "cat", NULL);
-			perror("erro ao executar cat");
+			wait(NULL);
+
+			int n = read(STDIN_FILENO, buffer, BUFFER_SIZE);
+			write(STDOUT_FILENO, buffer, n);
+			printf("%s\n", "ahoy" );
 			break;
 	}
 }
