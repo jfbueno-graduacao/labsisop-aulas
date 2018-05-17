@@ -1,0 +1,22 @@
+Jéferson Bueno
+
+Lista de exercícios 1
+
+1) Qual a função de um sistema operacional?
+Fazer o intermédio entre o computador (máquina) e o usuário, permitindo que seja possível executar tarefas de contextos diferentes num mesmo computador.
+
+2) Quais as camadas principais de um sistema Unix?
+Kernel e serviços do sistema.
+
+3) Cite 3 exemplos de sistemas baseados em Unix.
+FreeBSD, macOS (Darwin) e Solaris.
+
+4) Qual a relação entre Unix e Linux?
+Unix é o sistema usado como base para construção do Linux. 
+
+5) Cite 3 distribuições Linux.
+Mint, Fedora e Debian.
+
+6) O que faz o kernel do sistema operacional?
+"Comanda" o hardware fazendo o intermédio entre o sistema operacional e o mesmo, disponilizando serviços que são utilizados pelo sistema como um todo.
+

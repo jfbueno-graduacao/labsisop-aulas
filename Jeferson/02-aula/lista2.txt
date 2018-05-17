@@ -1,0 +1,282 @@
+Lista de exercícios 2
+
+Explique detalhadamente o efeito de cada um dos comandos apresentados a seguir:
+
+1) Qual a diferença entre man e info? Dê um exemplo.
+
+man apresenta um manual sucinto do comando com todos os argumentos e opções disponíveis.
+info apresenta uma documentação completa do comando, além de todos os argumentos e opções disponíveis.
+
+man ls 
+NAME
+       ls - list directory contents
+
+SYNOPSIS
+       ls [OPTION]... [FILE]...
+
+DESCRIPTION
+
+info ls
+10.1 ‘ls’: List directory contents
+==================================
+
+The ‘ls’ program lists information about files (of any type, including
+directories).  Options and file arguments can be intermixed arbitrarily,
+as usual.
+
+------------------------------------------------------------------------------------------
+
+2) Qual comando apresenta os usuários logados? Dê um exemplo.
+
+who
+
+labsisop@labsisop-pc:~$ who
+labsisop tty1         2018-03-08 19:46
+labsisop tty7         2018-03-08 19:45 (:0)
+labsisop tty2         2018-03-08 19:55
+
+------------------------------------------------------------------------------------------
+
+3) Qual a diferença entre ls -1, ls -l e ls -la? Mostre um exemplo.
+
+# ls -1 Mostra cada arquivo/diretório em uma linha.
+
+labsisop@labsisop-pc:~/Downloads$ ls -1
+lista2.txt
+teste.txt
+
+# ls -l Mostra os arquivos na forma de listagem longa, que contém as permissões deles, os usuários e grupos da criação, data de modificação, entre outras informações.
+
+labsisop@labsisop-pc:~/Downloads$ ls -l
+total 8
+-rw-rw-r-- 1 labsisop labsisop 1914 Mar  8 19:54 lista2.txt
+-rw-rw-r-- 1 labsisop labsisop    6 Mar  8 20:10 teste.txt
+
+# ls -la é uma combinação de -l com -a. O -l foi explicado acima, o -a mostra todos os arquivos, incluindo aqueles que cujo nome começa com o carácter ".". Estes são, por padrão, arquivos "ignorados", não mostrados.
+
+labsisop@labsisop-pc:~/Downloads$ ls -la
+total 28
+drwxr-xr-x  2 labsisop labsisop  4096 Mar  8 20:10 .
+drwxr-xr-x 17 labsisop labsisop  4096 Mar  8 19:45 ..
+-rw-rw-r--  1 labsisop labsisop  1914 Mar  8 19:54 lista2.txt
+-rw-r--r--  1 labsisop labsisop 12288 Mar  8 19:57 .lista2.txt.swp
+
+------------------------------------------------------------------------------------------
+
+4#) O que faz o df e o df -h? Exemplifique.
+
+Printa na tela o espaço usado e livre de cada sistema de arquivos disponível. A opção -h torna a saída mais amigável para leitura, mostrando os valores em megas, gigas, etc.
+
+------------------------------------------------------------------------------------------
+
+5#) Apresente os comandos que criem um link simbólico e um hard link. Explique as diferenças entre eles através de um exemplo.
+
+ln cria um hard link. ln -s (opção soft) cria um link simbólico.
+
+Os Hard Links se mantém mesmo se arquivo for movido ou renomeado. Isso porque eles apontam para o nó indíce do arquivo. Enquanto o link siombólico aponta para o nome arquivo, então quando o arquivo é renomeado o link fica inválido.
+
+### Criando arquivo a1
+labsisop@labsisop-pc:~/links$ echo "TEXTO" > a1; cat a1
+TEXTO
+
+### Criando link simbólico (a1-soft) e hard link (a1-hard) para o arquivo a1. Usando o comando cat ### com os links. Ambos mostram o conteúdo de a1
+labsisop@labsisop-pc:~/links$ ln a1 a1-hard; ln -s a1 a1-soft; cat a1-hard; cat a1-soft
+TEXTO
+TEXTO
+
+### renomeando arquivo a1 para arquivo1
+labsisop@labsisop-pc:~/links$ mv a1 arquivo1
+
+### Tentando usar o cat com os links criados. O link hard continua apontando para o arquivo1. O ### link simbólico agora é inválido.
+labsisop@labsisop-pc:~/links$ cat a1-hard; cat a1-soft
+Um
+cat: a1-soft: No such file or directory
+
+
+------------------------------------------------------------------------------------------
+
+6) O que faz o cd ~? Exemplifique.
+
+O ~ é um wildcard que se refere ao diretório home do usuário, portanto cd ~ troca o diretório atual para o diretório "home" do usuário.
+
+labsisop@labsisop-pc:/etc/network/interfaces.d$ cd ~
+labsisop@labsisop-pc:~$ pwd
+/home/labsisop
+
+------------------------------------------------------------------------------------------
+
+7) O que faz o pwd? Exemplifique.
+
+Printa na tela o caminho completo do diretório em que se está trabalhando.
+
+labsisop@labsisop-pc:~/Downloads$ pwd
+/home/labsisop/Downloads
+
+------------------------------------------------------------------------------------------
+
+8) Execute ls | wc -l. O que ele faz?
+
+Printa na tela a quantidade de arquivos do diretório atual.
+
+O pipe (|) envia a saída padrão do comando ls para o comando wc. O comando wc com a opção -l conta a quantidade de linhas do parâmetro recebido.
+
+Nota: Ao usar wc como saída do comando ls, é adicionada a opção -1.
+
+------------------------------------------------------------------------------------------
+
+9) O que faz o touch? Exemplifique.
+
+Altera a data de acesso/modificação do arquivo especificado. Se o parâmetro informado não for um arquivo existente um novo arquivo será criado.
+
+------------------------------------------------------------------------------------------
+
+10) Qual comando exibe o calendário atual?
+
+cal
+
+------------------------------------------------------------------------------------------
+
+11) Apresente um comando para armazenar o calendário atual em um arquivo.
+
+cal > arquivo.txt
+
+------------------------------------------------------------------------------------------
+
+12) Qual comando exibe a data e o hora atual na tela?
+
+date
+
+------------------------------------------------------------------------------------------
+
+13) Qual comando deve ser utilizado para alterar a senha do usuário atual?
+
+passwd
+
+------------------------------------------------------------------------------------------
+
+14) Execute o date > a.txt. O que ocorre?
+
+Salva a saída do comando date (data e hora atual) num arquivo chamado a.txt
+
+------------------------------------------------------------------------------------------
+
+15) Depois o date >> a.txt;date >> a.txt;date >> a.txt 
+
+É concatenada a data/hora atual no arquivo a.txt, 3 vezes.
+
+------------------------------------------------------------------------------------------
+
+16) Escreva o comando, em uma linha que crie um arquivo de texto que armazene a data e hora atual sucedido do calendário, após exiba o conteúdo deste arquivo em tela.
+
+
+labsisop@labsisop-pc:~/Downloads$ date > novo.txt; cal >> novo.txt; cat novo.txt
+Qui Mar  8 20:40:25 BRT 2018
+     Março 2018       
+Do Se Te Qu Qu Se Sá  
+             1  2  3  
+ 4  5  6  7  8  9 10  
+11 12 13 14 15 16 17  
+18 19 20 21 22 23 24  
+25 26 27 28 29 30 31  
+                      
+labsisop@labsisop-pc:~/Downloads$ 
+
+------------------------------------------------------------------------------------------
+
+17) Execute os comandos cat a.txt | sort - r | less
+
+Qui Mar  8 20:53:04 BRT 2018
+Qui Mar  8 20:53:04 BRT 2018
+Qui Mar  8 20:53:04 BRT 2018
+Qui Mar  8 20:52:52 BRT 2018
+(END)
+
+------------------------------------------------------------------------------------------
+
+18) Renomeie o arquivo criado.
+
+mv novo.txt novo-nome.txt
+
+------------------------------------------------------------------------------------------
+
+19) Crie uma subpasta.
+
+mkdir novapasta
+
+------------------------------------------------------------------------------------------
+
+20) Copie o arquivo para a subpasta.
+
+cp novo-nome.txt novapasta/
+
+------------------------------------------------------------------------------------------
+
+21) Remova o arquivo original.
+
+rm novo-nome.txt
+
+------------------------------------------------------------------------------------------
+
+22) Grave em arquivo o log do conjunto de processos em execução no momento.
+
+ps > processos.txt
+
+------------------------------------------------------------------------------------------
+
+23) O que faz o comando cd . ; pwd?
+
+Apenas printa o caminho completo do diretório de trabalho atual. O comando cd tenta trocar o diretório e o . é a representação do diretório atual.
+
+------------------------------------------------------------------------------------------
+
+24) O que faz o comando cd .. ; pwd?
+
+Printa o caminho do diretório anterior ao atual. O .. representa o diretório anterior ao diretório de trabalho atual.
+
+------------------------------------------------------------------------------------------
+
+25) O que faz o comando echo /dev/sd[ab]*?
+
+Printa na tela os diretórios que iniciem com /dev/sd, seguidos por um a ou um b e depois por quaisquer carácteres.
+
+------------------------------------------------------------------------------------------
+
+26) Execute mkdir teste. Execute agora o mv teste test. O que ele faz?
+
+Cria uma pasta chamada teste depois a renomeia para test
+
+------------------------------------------------------------------------------------------
+
+27) Qual comando para ver o uso da memória RAM? Como exibir em GB?
+
+free
+
+Para ver em GB se usa a opção -g -> free -g
+
+------------------------------------------------------------------------------------------
+
+28) Qual comando para desligar o sistema?
+
+shutdown com a opção -P
+
+------------------------------------------------------------------------------------------
+
+29) Cite 3 shells diferentes.
+
+Korn Shell, Bash e Fish
+
+------------------------------------------------------------------------------------------
+
+30) Existe algo análogo a shell script fora do Unix?
+
+Sim. O Windows tem os batches e também o PowerShell.
+
+------------------------------------------------------------------------------------------
+
+31) Qual a diferença fundamental entre linguagem de programação mais tradicional (C, C++, Java, C#, Delphi, Fortran), e a programação em Shell Script?
+
+A programação ShellScript é interpretada no tempo da execução. Ou seja, arquivo de código fonte é lido e executado linha por linha pelo shell. Enquanto as liguagens de programação citadas acima contém um processo de compilação para serem executadas posteriormente.
+
+
+
+
