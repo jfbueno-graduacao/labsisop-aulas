@@ -7,6 +7,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+//PARA COMPILAR
+// gcc shm.c -o shm -l rt
+
 //Declaração do nome da SHMEM
 const char* CHAVE = "/compart1";
 //Declaração do tamanho a ser reservado
