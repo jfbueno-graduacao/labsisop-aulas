@@ -14,23 +14,17 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	//system("cat ex3.c");
-
 	char* ext = strrchr(argv[1], '.');
 
 	if(strcmp(ext, ".gz") == 0) {
 		descompactar(argv[1]);
-	}
-
-
-	printf("%s\n", ext);
+	}	
 }
 
 void descompactar(char* arquivo) {
 	int fd[2];
 	char buffer[BUFFER_SIZE];
 
-	//gzip texto.txt.gz -d
 	switch(fork()) 
 	{
 		case -1:
@@ -41,12 +35,11 @@ void descompactar(char* arquivo) {
 			close(fd[0]); 
 
 			execlp("gzip", "gzip", arquivo, "-d -c", NULL);
-			perror("exec gzip");
+			perror("erro ao executar gzip");
 			break;
 		default:
 			close(fd[1]);
 
-			printf("Processo pai\nEscrevendo a saída do filho...\n");
 			int n = read(fd[0], buffer, BUFFER_SIZE);
 			write(STDOUT_FILENO, buffer, n);
 			break;
