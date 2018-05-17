@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <mqueue.h>
 
+//PARA COMPILAR -> 
+
 //Nome da fila
 const char* NOME_FILA = "/fila1";
 
