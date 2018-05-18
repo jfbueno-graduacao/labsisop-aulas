@@ -10,6 +10,7 @@ const char* FILA_SHARED = "/fila_msgs";
 typedef struct Mercadoria {
 	int id;
 	float peso;
+	char identificador[128];
 } TMercadoria;
 
 ssize_t get_msg_buffer_size(mqd_t queue);
@@ -43,7 +44,6 @@ int main()
 			exit(4);
 		}
 
-		printf("%s\n", "Despacho recebido");
 		print_mercadoria((TMercadoria*) buffer);
 
 		mq_close(queue);
@@ -52,6 +52,7 @@ int main()
 }
 
 void print_mercadoria(TMercadoria* m) {
+	printf("Despacho recebido do cliente %s", m->identificador);
 	printf("\nId do produto: %d\nPeso=%f\n", m->id, m->peso);
 }
 
