@@ -3,7 +3,9 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <mqueue.h>
+#include <signal.h>
 
 // Nome da fila para comunicação server -> client 
 const char* FILA_SERVER_CLI = "/fila_server-cli3";
@@ -11,9 +13,13 @@ const char* FILA_SERVER_CLI = "/fila_server-cli3";
 const char* FILA_CLI_SERVER = "/fila_cli-server3";
 
 typedef struct Jogador {
-	int pid;
+	pid_t pid;
 	char nickname[128];
 } TJogador;
+
+typedef struct RespostaRequisicao {
+	int codigo;
+} TResposta;
 
 typedef struct Jogada {
 	int x;
@@ -23,7 +29,7 @@ typedef struct Jogada {
 ssize_t get_msg_buffer_size(mqd_t queue);
 void print_jogador(TJogador* m);
 void print2(int qtdJogadores, char* str);
-void jogar();
+void iniciar_jogo();
 
 TJogador* jogadores[2];
 
@@ -70,11 +76,10 @@ int main()
 			exit(2);
 		}
 
-		TJogada j;
-		j.x = 12;
-		j.y = 13;
+		TResposta resposta;
+		resposta.codigo = 1; // * Jogador logado
 
-		if (mq_send(queue, (const char*) &j, sizeof(TJogada), 29) != 0) {
+		if (mq_send(queue, (const char*) &resposta, sizeof(TResposta), 29) != 0) {
 			perror("erro ao enviar mensagem para o cliente");
 		}
 
@@ -84,7 +89,19 @@ int main()
 		mq_close(queue);
 	}
 
-	printf("Jogadores logados. Iniciando jogo...\n");	
+	printf("Jogadores logados. Iniciando jogo...\n");
+	iniciar_jogo();
+}
+
+void iniciar_jogo()
+{	
+	int index_jogador = 0;
+	while(1)
+	{
+		TJogador* jogador_atual = jogadores[index_jogador];
+		kill(jogador_atual->pid, 10);
+		break;
+	}
 }
 
 void print2(int qtdJogadores, char* str)

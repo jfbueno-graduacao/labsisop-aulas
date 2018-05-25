@@ -3,7 +3,10 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <mqueue.h>
+#include <unistd.h>
+#include <signal.h>
 
 // Nome da fila para comunicação server -> client 
 const char* FILA_SERVER_CLI = "/fila_server-cli3";
@@ -11,9 +14,13 @@ const char* FILA_SERVER_CLI = "/fila_server-cli3";
 const char* FILA_CLI_SERVER = "/fila_cli-server3";
 
 typedef struct Jogador {
-	int pid;
+	pid_t pid;
 	char nickname[128];
 } TJogador;
+
+typedef struct RespostaRequisicao {
+	int codigo;
+} TResposta;
 
 typedef struct Jogada {
 	int x;
@@ -21,7 +28,35 @@ typedef struct Jogada {
 } TJogada;
 
 ssize_t get_msg_buffer_size(mqd_t queue);
-void print(TJogada *m);
+void print(TResposta *m);
+void iniciar_jogo();
+
+void tratador_sinal(int signum) {
+	TJogada jogada;
+
+	int jogadaX;
+	printf("Coordenada X da jogada: ");
+	scanf("%d", &jogadaX);
+
+	int jogadaY;
+	printf("\nCoordenada Y da jogada: ");
+	scanf("%d", &jogadaY);
+
+	jogada.x = jogadaX;
+	jogada.y = jogadaY;
+
+	mqd_t queue = mq_open(FILA_CLI_SERVER, O_WRONLY | O_CREAT, 0660, NULL);
+	if (queue == (mqd_t) -1) {
+		perror("mq_open");
+		exit(2);
+	}
+
+	if (mq_send(queue, (const char*) &jogada, sizeof(TJogada), 29) != 0) {
+		perror("erro ao enviar mensagem para servidor");
+	}
+
+	mq_close(queue);
+}
 
 int main() 
 {
@@ -30,9 +65,9 @@ int main()
 	
 	char nick[128];
 	printf("%s", "Entre com o seu nick: ");
-	scanf("%s", nick);
+	scanf("%s", nick); 
 
-	msg.pid = 123;
+	msg.pid = getpid();
 	strncpy(msg.nickname, nick, 127);
 
 	queue = mq_open(FILA_CLI_SERVER, O_WRONLY | O_CREAT, 0660, NULL);
@@ -64,14 +99,44 @@ int main()
 		exit(4);
 	}
 
-	TJogada* resposta = (TJogada*) buffer;
-	print(resposta);
-	
+	TResposta* resposta = (TResposta*) buffer;
+
+	if(resposta->codigo == 1) {
+		iniciar_jogo();
+	}
+
+	printf("Servidor indisponível para jogar");
 }
 
-void print(TJogada *m) {
-	printf("x %d", m->x);
-	printf("y %d", m->y);
+void iniciar_jogo()
+{
+	sigset_t mask;
+	struct sigaction action;
+	memset(&action, 0, sizeof(action));
+
+	action.sa_handler = &tratador_sinal;
+
+	if(sigaction(SIGUSR1, &action, NULL) == -1){
+		perror("Falha ao registrar recebedor de sinais");
+		exit(-1);
+	}
+
+	printf("Meu PID = %d\n ESPERANDO SINAL \n", getpid());
+
+	//seleciona todos os sinais exceto SIGUSR1
+	sigfillset(&mask);
+	sigdelset(&mask, SIGUSR1);
+
+	while(1) 
+	{
+		// Fica aguardando sinal do servidor
+		sigsuspend(&mask);
+	}
+}
+
+void print(TResposta *m) 
+{
+	printf("codigo resposta %d", m->codigo);
 }
 
 ssize_t get_msg_buffer_size(mqd_t queue) 
