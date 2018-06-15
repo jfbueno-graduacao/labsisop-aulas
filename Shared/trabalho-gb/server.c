@@ -29,8 +29,10 @@ typedef struct Jogada {
 ssize_t get_msg_buffer_size(mqd_t queue);
 void print_jogador(TJogador* m);
 void iniciar_jogo();
+int converter_jogada(int x, int y);
 
 TJogador* jogadores[2];
+int tabuleiro[9] = { -1 };
 
 int main()
 {
@@ -91,7 +93,7 @@ int main()
 }
 
 void iniciar_jogo()
-{	
+{
 	int index_jogador = 0;
 	mqd_t queue;
 	char* buffer = NULL;
@@ -120,6 +122,11 @@ void iniciar_jogo()
 		}
 
 		TJogada *jogada = (TJogada*) buffer;
+
+		int index = converter_jogada(jogada->x, jogada->y);
+		tabuleiro[index] = index_jogador;
+		printf("--------- %d \n ", tabuleiro[index]);
+
 		printf("X = %d\n", jogada->x);
 		printf("Y = %d\n", jogada->y);
 
@@ -127,6 +134,19 @@ void iniciar_jogo()
 	}
 }
 
+// Converte as coordenadas da jogada para o indíce do tabuleiro
+int converter_jogada(int x, int y)
+{
+	if(x == 1) {
+		return y - 1;
+	}
+
+	if(x == 2) {
+		return (y + 3) - 1;
+	}
+	
+	return (y + 6) - 1;	
+}
 
 void print_jogador(TJogador *m) {
 	printf("ID %d", m->pid);

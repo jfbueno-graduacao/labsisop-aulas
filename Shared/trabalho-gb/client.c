@@ -33,13 +33,17 @@ void iniciar_jogo();
 void tratador_sinal(int signum) {
 	TJogada jogada;
 
-	int jogadaX;
-	printf("Coordenada X da jogada: ");
-	scanf("%d", &jogadaX);
+	int jogadaX = 0;
+	while(jogadaX < 1 || jogadaX > 3) {
+		printf("Coordenada X da jogada: ");
+		scanf("%d", &jogadaX);
+	}
 
-	int jogadaY;
-	printf("\nCoordenada Y da jogada: ");
-	scanf("%d", &jogadaY);
+	int jogadaY = 0;
+	while(jogadaY < 1 || jogadaY > 3) {
+		printf("\nCoordenada Y da jogada: ");
+		scanf("%d", &jogadaY);
+	}
 
 	jogada.x = jogadaX;
 	jogada.y = jogadaY;
@@ -147,5 +151,5 @@ ssize_t get_msg_buffer_size(mqd_t queue)
 
 void jogar()
 {
-	
+
 }
