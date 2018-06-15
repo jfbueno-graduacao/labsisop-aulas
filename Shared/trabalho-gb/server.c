@@ -28,7 +28,6 @@ typedef struct Jogada {
 
 ssize_t get_msg_buffer_size(mqd_t queue);
 void print_jogador(TJogador* m);
-void print2(int qtdJogadores, char* str);
 void iniciar_jogo();
 
 TJogador* jogadores[2];
@@ -46,7 +45,6 @@ int main()
 
 	while(qtdJogadores < 2) 
 	{
-		print2(qtdJogadores, "11111\n\n");
 		queue = mq_open(FILA_CLI_SERVER, O_RDONLY | O_CREAT, 0660, NULL);
 		if (queue == (mqd_t) -1) {
 			perror("mq_open");
@@ -70,7 +68,7 @@ int main()
 		mq_close(queue);
 
 		// Responder cliente que está ok
-		queue = mq_open(FILA_SERVER_CLI, O_WRONLY | O_CREAT, 0660, NULL);
+		queue = mq_open(FILA_SERVER_CLI, O_WRONLY | O_CREAT, 0777, NULL);
 		if (queue == (mqd_t) -1) {
 			perror("mq_open");
 			exit(2);
@@ -84,7 +82,6 @@ int main()
 		}
 
 		qtdJogadores++;
-		print2(qtdJogadores, "2222\n\n");
 
 		mq_close(queue);
 	}
@@ -96,17 +93,38 @@ int main()
 void iniciar_jogo()
 {	
 	int index_jogador = 0;
+	mqd_t queue;
+	char* buffer = NULL;
+	ssize_t tam_buffer;
+	ssize_t nbytes;	
+
 	while(1)
 	{
-		TJogador* jogador_atual = jogadores[index_jogador];
+		TJogador* jogador_atual = jogadores[index_jogador];		
 		kill(jogador_atual->pid, 10);
-		break;
-	}
-}
 
-void print2(int qtdJogadores, char* str)
-{
-	printf("%d -- %s", qtdJogadores, str);
+		queue = mq_open(FILA_CLI_SERVER, O_RDONLY | O_CREAT, 0777, NULL);
+		if (queue == (mqd_t) -1) {
+			perror("mq_open");
+			exit(2);
+		}
+
+		tam_buffer = get_msg_buffer_size(queue);		
+		buffer = calloc(tam_buffer, 1);
+
+		nbytes = mq_receive(queue, buffer, tam_buffer, NULL);
+
+		if (nbytes == -1) {
+			perror("receive");
+			exit(4);
+		}
+
+		TJogada *jogada = (TJogada*) buffer;
+		printf("X = %d\n", jogada->x);
+		printf("Y = %d\n", jogada->y);
+
+		index_jogador = !index_jogador;
+	}
 }
 
 

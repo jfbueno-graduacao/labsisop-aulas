@@ -28,7 +28,6 @@ typedef struct Jogada {
 } TJogada;
 
 ssize_t get_msg_buffer_size(mqd_t queue);
-void print(TResposta *m);
 void iniciar_jogo();
 
 void tratador_sinal(int signum) {
@@ -45,7 +44,7 @@ void tratador_sinal(int signum) {
 	jogada.x = jogadaX;
 	jogada.y = jogadaY;
 
-	mqd_t queue = mq_open(FILA_CLI_SERVER, O_WRONLY | O_CREAT, 0660, NULL);
+	mqd_t queue = mq_open(FILA_CLI_SERVER, O_WRONLY | O_CREAT, 0777, NULL);
 	if (queue == (mqd_t) -1) {
 		perror("mq_open");
 		exit(2);
@@ -121,7 +120,7 @@ void iniciar_jogo()
 		exit(-1);
 	}
 
-	printf("Meu PID = %d\n ESPERANDO SINAL \n", getpid());
+	printf("Meu PID = %d\n aguardando inicio do jogo \n", getpid());
 
 	//seleciona todos os sinais exceto SIGUSR1
 	sigfillset(&mask);
@@ -132,11 +131,6 @@ void iniciar_jogo()
 		// Fica aguardando sinal do servidor
 		sigsuspend(&mask);
 	}
-}
-
-void print(TResposta *m) 
-{
-	printf("codigo resposta %d", m->codigo);
 }
 
 ssize_t get_msg_buffer_size(mqd_t queue) 
@@ -153,5 +147,5 @@ ssize_t get_msg_buffer_size(mqd_t queue)
 
 void jogar()
 {
-
+	
 }
