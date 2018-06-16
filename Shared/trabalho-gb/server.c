@@ -8,7 +8,7 @@
 #include <signal.h>
 #include "common.h"
 
-void print_jogador(TJogador* m);
+void msg_jogador_conectado(TJogador* m);
 void iniciar_jogo();
 int converter_jogada(int x, int y);
 void desenhar_tabuleiro();
@@ -47,7 +47,7 @@ int main()
 		}
 
 		TJogador *jogador = (TJogador*) buffer;
-		print_jogador(jogador);
+		msg_jogador_conectado(jogador);
 		jogadores[qtdJogadores] = jogador;
 
 		mq_close(queue);
@@ -141,9 +141,9 @@ int converter_jogada(int x, int y)
 	return (6 + y) - 1;	
 }
 
-void print_jogador(TJogador *m) {
-	printf("ID %d", m->pid);
-	printf("\nNickname: %s\n", m->nickname);
+void msg_jogador_conectado(TJogador *jogador) 
+{
+	printf("%s entrou no jogo. ID %d\n", jogador->nickname, jogador->pid);
 }
 
 void desenhar_tabuleiro()
