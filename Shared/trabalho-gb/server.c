@@ -6,33 +6,16 @@
 #include <sys/types.h>
 #include <mqueue.h>
 #include <signal.h>
+#include "common.h"
 
-// Nome da fila para comunicação server -> client 
-const char* FILA_SERVER_CLI = "/fila_server-cli3";
-// Nome da fila para comunicação client -> server
-const char* FILA_CLI_SERVER = "/fila_cli-server3";
-
-typedef struct Jogador {
-	pid_t pid;
-	char nickname[128];
-} TJogador;
-
-typedef struct RespostaRequisicao {
-	int codigo;
-} TResposta;
-
-typedef struct Jogada {
-	int x;
-	int y;
-} TJogada;
-
-ssize_t get_msg_buffer_size(mqd_t queue);
 void print_jogador(TJogador* m);
 void iniciar_jogo();
 int converter_jogada(int x, int y);
+void desenhar_tabuleiro();
+char mapear_jogada(int item);
 
 TJogador* jogadores[2];
-int tabuleiro[9] = { -1 };
+int tabuleiro[9] = { -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
 int main()
 {
@@ -88,7 +71,7 @@ int main()
 		mq_close(queue);
 	}
 
-	printf("Jogadores logados. Iniciando jogo...\n");
+	printf("Jogadores logados. Iniciando jogo...\n\n");
 	iniciar_jogo();
 }
 
@@ -104,6 +87,8 @@ void iniciar_jogo()
 	{
 		TJogador* jogador_atual = jogadores[index_jogador];		
 		kill(jogador_atual->pid, 10);
+
+		printf("Vez de %s\n\n", jogador_atual->nickname);
 
 		queue = mq_open(FILA_CLI_SERVER, O_RDONLY | O_CREAT, 0777, NULL);
 		if (queue == (mqd_t) -1) {
@@ -124,13 +109,21 @@ void iniciar_jogo()
 		TJogada *jogada = (TJogada*) buffer;
 
 		int index = converter_jogada(jogada->x, jogada->y);
+
+		// Se a jogada for inválida. Avisar o player via SIGUSR2 
+		// e esperar uma nova jogada dele mesmo
+		if(tabuleiro[index] != -1) {
+			printf("\t *** Jogada inválida recebida ***\n");
+			kill(jogador_atual->pid, SIGUSR2);
+			continue;
+		}
+
 		tabuleiro[index] = index_jogador;
-		printf("--------- %d \n ", tabuleiro[index]);
-
-		printf("X = %d\n", jogada->x);
-		printf("Y = %d\n", jogada->y);
-
 		index_jogador = !index_jogador;
+
+		printf("Jogada recebida\n");
+		desenhar_tabuleiro();
+		printf("\n\n");
 	}
 }
 
@@ -142,10 +135,10 @@ int converter_jogada(int x, int y)
 	}
 
 	if(x == 2) {
-		return (y + 3) - 1;
+		return (3 + y) - 1;
 	}
 	
-	return (y + 6) - 1;	
+	return (6 + y) - 1;	
 }
 
 void print_jogador(TJogador *m) {
@@ -153,13 +146,38 @@ void print_jogador(TJogador *m) {
 	printf("\nNickname: %s\n", m->nickname);
 }
 
-ssize_t get_msg_buffer_size(mqd_t queue) {
-	struct mq_attr attr;
+void desenhar_tabuleiro()
+{
+    printf("[X] %s\n[O] %s\n\n", jogadores[0]->nickname, jogadores[1]->nickname);
 
-	if (mq_getattr(queue, &attr) != -1) {
-		return attr.mq_msgsize;
+    printf("        1     2     3  \n");
+    printf("                       \n");
+    printf("           |     |     \n");
+    printf("  1     %c  |  %c  |  %c \n", mapear_jogada(tabuleiro[0]), mapear_jogada(tabuleiro[1]), mapear_jogada(tabuleiro[2]));
+
+    printf("      _____|_____|_____\n");
+    printf("           |     |     \n");
+
+    printf("  2     %c  |  %c  |  %c \n", mapear_jogada(tabuleiro[3]), mapear_jogada(tabuleiro[4]), mapear_jogada(tabuleiro[5]));
+
+    printf("      _____|_____|_____\n");
+    printf("           |     |     \n");
+
+    printf("  3     %c  |  %c  |  %c \n", mapear_jogada(tabuleiro[6]), mapear_jogada(tabuleiro[7]), mapear_jogada(tabuleiro[8]));
+
+    printf("           |     |     \n\n");
+}
+
+// Mapeia um item da matriz que controla as jogadas para 
+// o símbolo referente àquela jogada
+char mapear_jogada(int item)
+{
+	switch(item) {
+		case -1:
+			return ' ';
+		case 0:
+			return 'X';
+		case 1:
+			return 'O';
 	}
-
-	perror("get_msg_buffer_size");
-	exit(3);
 }

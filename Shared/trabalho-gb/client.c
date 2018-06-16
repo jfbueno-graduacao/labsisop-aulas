@@ -7,58 +7,21 @@
 #include <mqueue.h>
 #include <unistd.h>
 #include <signal.h>
+#include "common.h"
 
-// Nome da fila para comunicação server -> client 
-const char* FILA_SERVER_CLI = "/fila_server-cli3";
-// Nome da fila para comunicação client -> server
-const char* FILA_CLI_SERVER = "/fila_cli-server3";
-
-typedef struct Jogador {
-	pid_t pid;
-	char nickname[128];
-} TJogador;
-
-typedef struct RespostaRequisicao {
-	int codigo;
-} TResposta;
-
-typedef struct Jogada {
-	int x;
-	int y;
-} TJogada;
-
-ssize_t get_msg_buffer_size(mqd_t queue);
 void iniciar_jogo();
+void fazer_jogada();
+void jogada_invalida();
 
-void tratador_sinal(int signum) {
-	TJogada jogada;
+void tratador_sinal(int signum) 
+{
+	// Se receber SIGUSR2 quer dizer que jogada foi inválida 
+	// e precisa ser repetida
+	if(signum == 12 || signum == 17 || signum == 31) {
+		jogada_invalida();
+	} 
 
-	int jogadaX = 0;
-	while(jogadaX < 1 || jogadaX > 3) {
-		printf("Coordenada X da jogada: ");
-		scanf("%d", &jogadaX);
-	}
-
-	int jogadaY = 0;
-	while(jogadaY < 1 || jogadaY > 3) {
-		printf("\nCoordenada Y da jogada: ");
-		scanf("%d", &jogadaY);
-	}
-
-	jogada.x = jogadaX;
-	jogada.y = jogadaY;
-
-	mqd_t queue = mq_open(FILA_CLI_SERVER, O_WRONLY | O_CREAT, 0777, NULL);
-	if (queue == (mqd_t) -1) {
-		perror("mq_open");
-		exit(2);
-	}
-
-	if (mq_send(queue, (const char*) &jogada, sizeof(TJogada), 29) != 0) {
-		perror("erro ao enviar mensagem para servidor");
-	}
-
-	mq_close(queue);
+	fazer_jogada();
 }
 
 int main() 
@@ -119,7 +82,7 @@ void iniciar_jogo()
 
 	action.sa_handler = &tratador_sinal;
 
-	if(sigaction(SIGUSR1, &action, NULL) == -1){
+	if(sigaction(SIGUSR1, &action, NULL) == -1 || sigaction(SIGUSR2, &action, NULL) == -1){
 		perror("Falha ao registrar recebedor de sinais");
 		exit(-1);
 	}
@@ -129,6 +92,7 @@ void iniciar_jogo()
 	//seleciona todos os sinais exceto SIGUSR1
 	sigfillset(&mask);
 	sigdelset(&mask, SIGUSR1);
+	sigdelset(&mask, SIGUSR2);
 
 	while(1) 
 	{
@@ -137,19 +101,39 @@ void iniciar_jogo()
 	}
 }
 
-ssize_t get_msg_buffer_size(mqd_t queue) 
+void fazer_jogada()
 {
-	struct mq_attr attr;
+	TJogada jogada;
 
-	if (mq_getattr(queue, &attr) != -1) {
-		return attr.mq_msgsize;
+	int jogadaX = 0;
+	while(jogadaX < 1 || jogadaX > 3) {
+		printf("Coordenada X da jogada: ");
+		scanf("%d", &jogadaX);
 	}
 
-	perror("get_msg_buffer_size");
-	exit(3);
+	int jogadaY = 0;
+	while(jogadaY < 1 || jogadaY > 3) {
+		printf("Coordenada Y da jogada: ");
+		scanf("%d", &jogadaY);
+	}
+
+	jogada.x = jogadaX;
+	jogada.y = jogadaY;
+
+	mqd_t queue = mq_open(FILA_CLI_SERVER, O_WRONLY | O_CREAT, 0777, NULL);
+	if (queue == (mqd_t) -1) {
+		perror("mq_open");
+		exit(2);
+	}
+
+	if (mq_send(queue, (const char*) &jogada, sizeof(TJogada), 29) != 0) {
+		perror("erro ao enviar mensagem para servidor");
+	}
+
+	mq_close(queue);
 }
 
-void jogar()
+void jogada_invalida()
 {
-
+	printf("\t** A jogada anterior é inválida. Faca uma nova jogada. **\n\n");
 }
