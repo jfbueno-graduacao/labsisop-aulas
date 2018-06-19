@@ -1,0 +1,7 @@
+Implemente um programa em C que utilize IPC aplicando Fila de Mensagens,
+ para simular uma agência bancária que possui 2 filas: uma normal (fila 1) 
+ e outra prioritária (fila 2). Possui 3 caixas para atendimento (caixa 1, caixa 2 e caixa 3). 
+ Os caixas podem atender qualquer uma das 2 filas. Entretanto a prioridade é sempre da fila 2. 
+ O tempo de atendimento dos caixas pode variar aleatoriamente entre 5 e 60 segundos. 
+ O tempo de ingresso nas filas 1 e 2 é aleatório de dinâmico.
+ A política de alimentação da fila fica a cargo do seu grupo.
