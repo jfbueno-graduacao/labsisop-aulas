@@ -10,12 +10,12 @@
 
 void msg_jogador_conectado(TJogador* m);
 void iniciar_jogo();
-int converter_jogada(int x, int y);
 void desenhar_tabuleiro();
 char mapear_jogada(int item);
+int verificar_vencedor();
 
 TJogador* jogadores[2];
-int tabuleiro[9] = { -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+int tabuleiro2[3][3] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
 
 int main()
 {
@@ -27,6 +27,7 @@ int main()
 	ssize_t nbytes;	
 
 	int qtdJogadores = 0;
+	int mjogador = 1;
 
 	while(qtdJogadores < 2) 
 	{
@@ -47,6 +48,7 @@ int main()
 		}
 
 		TJogador *jogador = (TJogador*) buffer;
+		jogador->multiplicador = (mjogador += 2);
 		msg_jogador_conectado(jogador);
 		jogadores[qtdJogadores] = jogador;
 
@@ -86,7 +88,7 @@ void iniciar_jogo()
 	while(1)
 	{
 		TJogador* jogador_atual = jogadores[index_jogador];		
-		kill(jogador_atual->pid, 10);
+		kill(jogador_atual->pid, SIGUSR1);
 
 		printf("Vez de %s\n\n", jogador_atual->nickname);
 
@@ -108,37 +110,34 @@ void iniciar_jogo()
 
 		TJogada *jogada = (TJogada*) buffer;
 
-		int index = converter_jogada(jogada->x, jogada->y);
+		int x = jogada->x - 1;
+		int y = jogada->y - 1;
 
 		// Se a jogada for inválida. Avisar o player via SIGUSR2 
 		// e esperar uma nova jogada dele mesmo
-		if(tabuleiro[index] != -1) {
+		if(tabuleiro2[x][y] != 0) {
 			printf("\t *** Jogada inválida recebida ***\n");
 			kill(jogador_atual->pid, SIGUSR2);
 			continue;
 		}
 
-		tabuleiro[index] = index_jogador;
+		tabuleiro2[x][y] = jogador_atual->multiplicador;
 		index_jogador = !index_jogador;
 
 		printf("Jogada recebida\n");
 		desenhar_tabuleiro();
-		printf("\n\n");
-	}
-}
+		printf("\n");
 
-// Converte as coordenadas da jogada para o indíce do tabuleiro
-int converter_jogada(int x, int y)
-{
-	if(x == 1) {
-		return y - 1;
-	}
+		int venc = verificar_vencedor();
 
-	if(x == 2) {
-		return (3 + y) - 1;
+		if(venc == -2) {
+			printf("Ocorreu um empate. Finalizando o jogo\n");
+		} else if (venc == -1) {
+			continue;
+		}
+
+		printf("##### Parabéns, %s!!!! Você venceu! #####\n", jogadores[venc]->nickname);
 	}
-	
-	return (6 + y) - 1;	
 }
 
 void msg_jogador_conectado(TJogador *jogador) 
@@ -153,17 +152,17 @@ void desenhar_tabuleiro()
     printf("        1     2     3  \n");
     printf("                       \n");
     printf("           |     |     \n");
-    printf("  1     %c  |  %c  |  %c \n", mapear_jogada(tabuleiro[0]), mapear_jogada(tabuleiro[1]), mapear_jogada(tabuleiro[2]));
+    printf("  1     %c  |  %c  |  %c \n", mapear_jogada(tabuleiro2[0][0]), mapear_jogada(tabuleiro2[0][1]), mapear_jogada(tabuleiro2[0][2]));
 
     printf("      _____|_____|_____\n");
     printf("           |     |     \n");
 
-    printf("  2     %c  |  %c  |  %c \n", mapear_jogada(tabuleiro[3]), mapear_jogada(tabuleiro[4]), mapear_jogada(tabuleiro[5]));
+    printf("  2     %c  |  %c  |  %c \n", mapear_jogada(tabuleiro2[1][0]), mapear_jogada(tabuleiro2[1][1]), mapear_jogada(tabuleiro2[1][2]));
 
     printf("      _____|_____|_____\n");
     printf("           |     |     \n");
 
-    printf("  3     %c  |  %c  |  %c \n", mapear_jogada(tabuleiro[6]), mapear_jogada(tabuleiro[7]), mapear_jogada(tabuleiro[8]));
+    printf("  3     %c  |  %c  |  %c \n", mapear_jogada(tabuleiro2[2][0]), mapear_jogada(tabuleiro2[2][1]), mapear_jogada(tabuleiro2[2][2]));
 
     printf("           |     |     \n\n");
 }
@@ -172,12 +171,60 @@ void desenhar_tabuleiro()
 // o símbolo referente àquela jogada
 char mapear_jogada(int item)
 {
-	switch(item) {
-		case -1:
-			return ' ';
-		case 0:
-			return 'X';
-		case 1:
-			return 'O';
+	if(item == jogadores[0]->multiplicador) {
+		return 'X';
 	}
+
+	if(item == jogadores[1]->multiplicador) {
+		return 'O';
+	}
+
+	return ' ';
+}
+
+// Verifica se há um vencedor e, se houver, retorna o indíce do mesmo no array de jogadores
+// Caso contrário retorn -1 se o jogo ainda não terminou ou -2 se for um empate
+int verificar_vencedor()
+{
+	int somas_colunas[3] = { 0, 0, 0 };
+	int somas_diagonais[2] = { 0, 0 };
+	// Estas variáveis servem para guardar os valores das somas das colunas
+	// e das duas diagonais. Assim, só é preciso passar uma vez pela matriz para
+	// verificar se há um ganhador
+
+	int m0 = jogadores[0]->multiplicador * 3;
+	int m1 = jogadores[1]->multiplicador * 3;
+	int qtd_cadas_disponiveis = 0;
+
+	printf("M0 == %d\n", m0);
+	printf("M1 == %d\n", m1);
+
+	for(int linha = 0; linha < 3; linha++) {
+		int soma_linha = 0;
+
+		for(int coluna = 0; coluna < 3; coluna++) {
+			int valor = tabuleiro2[linha][coluna];
+
+			soma_linha += valor;
+			somas_colunas[coluna] += valor;
+
+			if(valor == 0) {
+				qtd_cadas_disponiveis++;
+			}
+
+			if(soma_linha == m0 || somas_colunas[coluna] == m0) {
+				printf("JOGADOR UM GANHOU ESSA MERDA\n");
+				return 0;
+			}else if(soma_linha == m1 || somas_colunas[coluna] == m1) {
+				printf("JOGADOR DOIS GANHOU ESSA PORRA\n");
+				return 1;
+			}
+		}
+	}
+
+	if(qtd_cadas_disponiveis == 0) {
+		return -2;
+	}
+
+	return -1;
 }

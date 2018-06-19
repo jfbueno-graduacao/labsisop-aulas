@@ -117,7 +117,7 @@ void fazer_jogada()
 		scanf("%d", &jogadaY);
 	}
 
-	printf("\n\n");
+	printf("\n");
 
 	jogada.x = jogadaX;
 	jogada.y = jogadaY;

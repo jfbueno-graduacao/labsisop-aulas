@@ -1,6 +1,7 @@
 typedef struct Jogador {
 	pid_t pid;
 	char nickname[128];
+	int multiplicador;
 } TJogador;
 
 typedef struct RespostaRequisicao {
@@ -13,9 +14,9 @@ typedef struct Jogada {
 } TJogada;
 
 // Nome da fila para comunicação server -> client 
-const char* FILA_SERVER_CLI = "/fila_server-cli3";
+const char* FILA_SERVER_CLI = "/fila_server-cli_";
 // Nome da fila para comunicação client -> server
-const char* FILA_CLI_SERVER = "/fila_cli-server3";
+const char* FILA_CLI_SERVER = "/fila_cli-server_";
 
 ssize_t get_msg_buffer_size(mqd_t queue) {
 	struct mq_attr attr;
