@@ -4,9 +4,9 @@ typedef struct Jogador {
 	int multiplicador;
 } TJogador;
 
-typedef struct RespostaRequisicao {
+typedef struct MensagemRequisicao {
 	int codigo;
-} TResposta;
+} TMensagem;
 
 typedef struct Jogada {
 	int x;

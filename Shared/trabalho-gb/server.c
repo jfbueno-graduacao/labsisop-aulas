@@ -61,10 +61,10 @@ int main()
 			exit(2);
 		}
 
-		TResposta resposta;
+		TMensagem resposta;
 		resposta.codigo = 1; // * Jogador logado
 
-		if (mq_send(queue, (const char*) &resposta, sizeof(TResposta), 29) != 0) {
+		if (mq_send(queue, (const char*) &resposta, sizeof(TMensagem), 29) != 0) {
 			perror("erro ao enviar mensagem para o cliente");
 		}
 
@@ -75,6 +75,10 @@ int main()
 
 	printf("Jogadores logados. Iniciando jogo...\n\n");
 	iniciar_jogo();
+}
+
+void enviar_msg_queue(const char* mensagem) {
+
 }
 
 void iniciar_jogo()
@@ -196,9 +200,6 @@ int verificar_vencedor()
 	int m1 = jogadores[1]->multiplicador * 3;
 	int qtd_cadas_disponiveis = 0;
 
-	printf("M0 == %d\n", m0);
-	printf("M1 == %d\n", m1);
-
 	for(int linha = 0; linha < 3; linha++) {
 		int soma_linha = 0;
 
@@ -208,15 +209,19 @@ int verificar_vencedor()
 			soma_linha += valor;
 			somas_colunas[coluna] += valor;
 
+			if(linha == coluna) {
+				somas_diagonais[0] += valor; 
+			}
+
 			if(valor == 0) {
 				qtd_cadas_disponiveis++;
 			}
 
-			if(soma_linha == m0 || somas_colunas[coluna] == m0) {
-				printf("JOGADOR UM GANHOU ESSA MERDA\n");
+			if( soma_linha == m0 || somas_colunas[coluna] == m0 || 
+				somas_diagonais[0] == m0 || somas_diagonais[1] == m0) {
 				return 0;
-			}else if(soma_linha == m1 || somas_colunas[coluna] == m1) {
-				printf("JOGADOR DOIS GANHOU ESSA PORRA\n");
+			}else if(soma_linha == m1 || somas_colunas[coluna] == m1 || 
+					 somas_diagonais[0] == m1 || somas_diagonais[1] == m1) {
 				return 1;
 			}
 		}

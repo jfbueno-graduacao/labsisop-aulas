@@ -65,7 +65,7 @@ int main()
 		exit(4);
 	}
 
-	TResposta* resposta = (TResposta*) buffer;
+	TMensagem* resposta = (TMensagem*) buffer;
 
 	if(resposta->codigo == 1) {
 		iniciar_jogo();
