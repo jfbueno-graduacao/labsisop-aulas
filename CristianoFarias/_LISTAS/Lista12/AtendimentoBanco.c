@@ -7,65 +7,76 @@
 #include <mqueue.h>
 #include <unistd.h>
 #include <signal.h>
-#include "common.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <errno.h>
+#include <sys/mman.h>
+#include <semaphore.h>
+#include <sys/wait.h>
+#include "filas.h"
+#define clear_console() printf("\033[H\033[J")
+//gcc AtendimentoBanco.c -o AtendimentoBanco -l  pthread -l rt
 
+
+void gerenciaFila(int atendente)
+{
+	if (atendente == 2)
+	{
+     readFila(1);
+	}
+	else
+	{
+	}
+}
+
+
+
+void *Caixa(void *param)
+{
+	char *par;
+	par = (char *)param;
+	int type = atoi(par);
+	while (1)
+	{
+		printf("Tipo de Fila : %i\n", type);
+		gerenciaFila(type);
+		sleep(5);
+	}
+	pthread_exit(NULL);
+}
+
+void iniciarAtendimento()
+{
+	//Iniciando Atendentes
+	pthread_t tids[3];
+	int th1 = pthread_create(&tids[0], NULL, &Caixa, (void *)"1");
+	if (th1)
+	{
+		errno = th1;
+		perror("Falha na criação da thread da Parte 1\n");
+		exit(EXIT_FAILURE);
+	}
+
+	int th2 = pthread_create(&tids[1], NULL, &Caixa, (void *)"2");
+	if (th2)
+	{
+		errno = th2;
+		perror("Falha na criação da thread da Parte 1\n");
+		exit(EXIT_FAILURE);
+	}
+
+	int th3 = pthread_create(&tids[2], NULL, &Caixa, (void *)"3");
+	if (th3)
+	{
+		errno = th3;
+		perror("Falha na criação da thread da Parte 1\n");
+		exit(EXIT_FAILURE);
+	}
+	pthread_exit(NULL);
+}
 
 int main()
 {
-	mqd_t queue;
-	TJogador jogador;
-
-	char* buffer = NULL;
-	ssize_t tam_buffer;
-	ssize_t nbytes;	
-
-	int qtdJogadores = 0;
-	int mjogador = 1;
-
-	while(qtdJogadores < 2) 
-	{
-		queue = mq_open(FILA_CLI_SERVER, O_RDONLY | O_CREAT, 0660, NULL);
-		if (queue == (mqd_t) -1) {
-			perror("mq_open");
-			exit(2);
-		}
-
-		tam_buffer = get_msg_buffer_size(queue);		
-		buffer = calloc(tam_buffer, 1);
-
-		nbytes = mq_receive(queue, buffer, tam_buffer, NULL);
-
-		if (nbytes == -1) {
-			perror("receive");
-			exit(4);
-		}
-
-		TJogador *jogador = (TJogador*) buffer;
-		jogador->multiplicador = (mjogador += 2);
-		msg_jogador_conectado(jogador);
-		jogadores[qtdJogadores] = jogador;
-
-		mq_close(queue);
-
-		// Responder cliente que está ok
-		queue = mq_open(FILA_SERVER_CLI, O_WRONLY | O_CREAT, 0777, NULL);
-		if (queue == (mqd_t) -1) {
-			perror("mq_open");
-			exit(2);
-		}
-
-		TResposta resposta;
-		resposta.codigo = 1; // * Jogador logado
-
-		if (mq_send(queue, (const char*) &resposta, sizeof(TResposta), 29) != 0) {
-			perror("erro ao enviar mensagem para o cliente");
-		}
-
-		qtdJogadores++;
-
-		mq_close(queue);
-	}
-
-	printf("Jogadores logados. Iniciando jogo...\n\n");
-	iniciar_jogo();
+	iniciarAtendimento();
 }
