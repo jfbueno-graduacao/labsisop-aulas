@@ -12,16 +12,32 @@
 void iniciar_jogo();
 void fazer_jogada();
 void jogada_invalida();
+char* ler_mensagem_queue();
 
 void tratador_sinal(int signum) 
 {
-	// Se receber SIGUSR2 quer dizer que jogada foi inválida 
-	// e precisa ser repetida
-	if(signum == 12 || signum == 17 || signum == 31) {
-		jogada_invalida();
-	} 
+	// Se receber SIGUSR2 quer dizer que é necessário
+	// ler a msg que o server deixou na fila e interpretá-la
+	if(signum == 12 || signum == 17 || signum == 31) 
+	{
+		char* buffer = ler_mensagem_queue();
+		TMensagem* resposta = (TMensagem*) buffer;
 
-	fazer_jogada();
+		if(resposta->codigo == 2) {
+			jogada_invalida();
+		} else if(resposta->codigo == 3) {
+			printf("O jogo terminou em empate!\n");
+			exit(0);
+		} else if(resposta->codigo == 4) {
+			printf("##### Parabéns! Você venceu! #####\n");
+			exit(0);
+		} else if (resposta->codigo == 5) {
+			printf("Você perdeu =(\n");
+			exit(0);
+		}
+	} else { // Neste caso, o sinal recebido é um sigusr1
+		fazer_jogada();
+	}
 }
 
 int main() 
@@ -49,7 +65,20 @@ int main()
 	mq_close(queue);
 	printf("Pedido para entrar no jogo enviado!\n");
 	
-	queue = mq_open(FILA_SERVER_CLI, O_RDONLY | O_CREAT, 0660, NULL);
+	char* buffer = ler_mensagem_queue();
+
+	TMensagem* resposta = (TMensagem*) buffer;
+
+	if(resposta->codigo == 1) {
+		iniciar_jogo();
+	}
+
+	printf("Servidor indisponível para jogar");
+}
+
+char* ler_mensagem_queue() 
+{
+	mqd_t queue = mq_open(FILA_SERVER_CLI, O_RDONLY | O_CREAT, 0660, NULL);
 	if (queue == (mqd_t) -1) {
 		perror("mq_open");
 		exit(2);
@@ -61,17 +90,13 @@ int main()
 	ssize_t nbytes = mq_receive(queue, buffer, tam_buffer, NULL);
 	
 	if (nbytes == -1) {
-		perror("receive");
+		perror("Erro ao receber mensagem do servidor");
 		exit(4);
 	}
 
-	TResposta* resposta = (TResposta*) buffer;
+	mq_close(queue);
 
-	if(resposta->codigo == 1) {
-		iniciar_jogo();
-	}
-
-	printf("Servidor indisponível para jogar");
+	return buffer;
 }
 
 void iniciar_jogo()
@@ -87,7 +112,7 @@ void iniciar_jogo()
 		exit(-1);
 	}
 
-	printf("Meu PID = %d\n aguardando inicio do jogo \n", getpid());
+	printf("Meu PID = %d\nAguardando inicio do jogo \n", getpid());
 
 	//seleciona todos os sinais exceto SIGUSR1
 	sigfillset(&mask);
@@ -107,13 +132,13 @@ void fazer_jogada()
 
 	int jogadaX = 0;
 	while(jogadaX < 1 || jogadaX > 3) {
-		printf("Coordenada X da jogada: ");
+		printf("Coordenada X da jogada (X): ");
 		scanf("%d", &jogadaX);
 	}
 
 	int jogadaY = 0;
 	while(jogadaY < 1 || jogadaY > 3) {
-		printf("Coordenada Y da jogada: ");
+		printf("Coordenada Y da jogada (Y): ");
 		scanf("%d", &jogadaY);
 	}
 
