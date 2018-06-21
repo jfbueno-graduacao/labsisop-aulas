@@ -7,12 +7,14 @@
 #include <mqueue.h>
 #include <unistd.h>
 #include <signal.h>
-
+int qtdFila1 = 0;
+int qtdFila2 = 0;
 typedef struct ClienteBanco
 {
 	int tipo;
 	char nome[200];
 } TClt;
+const struct sigevent *d;
 
 // Nome da fila para comunicação server -> client
 char *FILA_1 = "/fila_1_banco";
@@ -34,7 +36,7 @@ ssize_t get_msg_buffer_size(mqd_t queue)
 
 #define clear_console() printf("\033[H\033[J")
 
-void writeFila()
+void writeFila(char nome[], int tipoAtendimento)
 {
 
 	char *fila;
@@ -42,16 +44,9 @@ void writeFila()
 	mqd_t queue;
 	TClt msg;
 
-	int p;
-	char nome[200];
-	printf("Adicione uma pessoa a fila: \nDigite o nome: -->");
-	scanf("%s",nome);
-
-	printf("\nDigite o tipo de atendimento: 1=normal 2=prioritario: \n-->");
-	scanf("%i", &p);
-	msg.tipo = p;
+	msg.tipo = tipoAtendimento;
 	strncpy(msg.nome, nome, 200);
-	if (p == 1)
+	if (tipoAtendimento == 1)
 	{
 		fila = FILA_1;
 	}
@@ -69,9 +64,18 @@ void writeFila()
 
 	if (mq_send(queue, (const char *)&msg, sizeof(TClt), 29) != 0)
 	{
-		perror("erro ao enviar mensagem para servidor");
+		perror("erro ao enviar mensagem");
+	}
+	if (tipoAtendimento == 1)
+	{
+		qtdFila1++;
+	}
+	else
+	{
+		qtdFila2++;
 	}
 
+	printf("\nCHEGOU %s E RETIROU SENHA TIPO %s\n", msg.nome, msg.tipo == 1 ? "NORMAL" : "PRIORITARIO");
 	mq_close(queue);
 }
 
@@ -115,7 +119,20 @@ TClt readFila(int type)
 
 	TClt *jogador = (TClt *)buffer;
 
-	//printf("CLIENTE TIPO: %i\n", jogador->tipo);
+	if (type == 1)
+	{
+		if (qtdFila1 > 0)
+		{
+			qtdFila1--;
+		}
+	}
+	else
+	{
+		if (qtdFila2 > 0)
+		{
+			qtdFila2--;
+		}
+	}
 
 	mq_close(queue);
 
