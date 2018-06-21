@@ -18,19 +18,17 @@
 #define clear_console() printf("\033[H\033[J")
 //gcc AtendimentoBanco.c -o AtendimentoBanco -l  pthread -l rt
 
-
 void gerenciaFila(int atendente)
 {
 	if (atendente == 2)
 	{
-     readFila(1);
+		TClt cliente = readFila(2);
+		printf("ATENDIDO PELO ATENDENTE 2 NA FILA 2: %s\n", cliente.nome);
 	}
 	else
 	{
 	}
 }
-
-
 
 void *Caixa(void *param)
 {
@@ -39,9 +37,8 @@ void *Caixa(void *param)
 	int type = atoi(par);
 	while (1)
 	{
-		printf("Tipo de Fila : %i\n", type);
+		sleep(7);
 		gerenciaFila(type);
-		sleep(5);
 	}
 	pthread_exit(NULL);
 }

@@ -11,12 +11,13 @@
 typedef struct ClienteBanco
 {
 	int tipo;
+	char nome[200];
 } TClt;
 
 // Nome da fila para comunicação server -> client
- char *FILA_1 = "/fila_1_banco";
+char *FILA_1 = "/fila_1_banco";
 // Nome da fila para comunicação client -> server
- char *FILA_2 = "/fila_2_banco";
+char *FILA_2 = "/fila_2_banco";
 
 ssize_t get_msg_buffer_size(mqd_t queue)
 {
@@ -38,17 +39,18 @@ void writeFila()
 
 	char *fila;
 
-
 	mqd_t queue;
 	TClt msg;
 
 	int p;
-	printf("%s", "Adicione uma pessoa a fila: 1=normal 2=prioritario: ");
+	char nome[200];
+	printf("Adicione uma pessoa a fila: \nDigite o nome: -->");
+	scanf("%s",nome);
+
+	printf("\nDigite o tipo de atendimento: 1=normal 2=prioritario: \n-->");
 	scanf("%i", &p);
-
 	msg.tipo = p;
-
-
+	strncpy(msg.nome, nome, 200);
 	if (p == 1)
 	{
 		fila = FILA_1;
@@ -73,7 +75,7 @@ void writeFila()
 	mq_close(queue);
 }
 
-void readFila(int type)
+TClt readFila(int type)
 {
 
 	char *fila;
@@ -113,8 +115,9 @@ void readFila(int type)
 
 	TClt *jogador = (TClt *)buffer;
 
-	printf("CLIENTE TIPO: %i\n", jogador->tipo);
+	//printf("CLIENTE TIPO: %i\n", jogador->tipo);
 
 	mq_close(queue);
-}
 
+	return *jogador;
+}
