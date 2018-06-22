@@ -60,10 +60,7 @@ void *Caixa(void *param)
 }
 
 void *ClienteFila(void *param)
-{
-	char *par;
-	par = (char *)param;
-	int type = atoi(par);
+{	
 	int contCliente = 1;
 	while (1)
 	{

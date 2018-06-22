@@ -1,0 +1,3 @@
+[2018/06/21 22:21:12] 	 Jogador ccf -> Jogada: (3 3 | 3 3) Acertou
+018/06/21 22:14:50] 	 Jogador FCF -> Jogada: (0 0 | 0 1) Acertou
+[2018/06/21 22:15:03] 	 Jogador CCF -> Jogada: (1 1 | 2 2) Errou

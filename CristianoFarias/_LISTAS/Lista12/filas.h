@@ -93,7 +93,6 @@ TClt readFila(int type)
 		fila = FILA_2;
 	}
 	mqd_t queue;
-	TClt msg;
 
 	char *buffer = NULL;
 	ssize_t tam_buffer;
